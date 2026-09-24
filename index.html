@@ -8,7 +8,7 @@
       name="description"
       content="GERCAN Enterprises Inc. is a Victoria builder for architectural concrete formwork and hard landscaping, serving Vancouver Island and the Lower Mainland."
     />
-    <meta name="theme-color" content="#161815" />
+    <meta name="theme-color" content="#0c0c0c" />
     <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -48,17 +48,10 @@
 
     <header class="site-header" data-header>
       <a class="brand" href="#top">
-        <svg class="mark" viewBox="0 0 48 48" aria-hidden="true">
-          <rect x="4" y="4" width="40" height="40" fill="none" stroke="currentColor" stroke-width="2" />
-          <circle cx="12" cy="12" r="1.7" fill="#c46a3a" />
-          <circle cx="36" cy="12" r="1.7" fill="#c46a3a" />
-          <circle cx="12" cy="36" r="1.7" fill="#c46a3a" />
-          <circle cx="36" cy="36" r="1.7" fill="#c46a3a" />
-          <circle cx="24" cy="24" r="1.7" fill="currentColor" />
-        </svg>
+        <img class="mark" src="assets/logo-mark.svg" alt="" width="44" height="44" />
         <span class="brand-text">
-          <strong>GERCAN</strong>
-          <small>Enterprises Inc.</small>
+          <strong>G CONSTRUCTION</strong>
+          <small>Crete specialist</small>
         </span>
       </a>
       <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" data-nav-toggle>
@@ -206,7 +199,7 @@
         <div class="section-head">
           <p class="section-label">Reference</p>
           <h2>The kind of concrete and hardscape.</h2>
-          <p class="section-note">Reference images, not GERCAN projects. Filter by trade to compare finish and form. Current work is on Instagram.</p>
+          <p class="section-note">The bridge pour is our work. The other pictures are reference images, not a claimed project list. Current work is also on Instagram.</p>
         </div>
         <div class="filters" role="tablist" aria-label="Filter reference images">
           <button type="button" class="is-active" role="tab" aria-selected="true" data-filter="all">All</button>
@@ -214,7 +207,11 @@
           <button type="button" role="tab" aria-selected="false" data-filter="hardscape">Hardscape</button>
           <button type="button" role="tab" aria-selected="false" data-filter="site">Site concrete</button>
         </div>
-        <div class="gallery" data-gallery data-count="6">
+        <div class="gallery" data-gallery data-count="7">
+          <figure data-kind="site">
+            <img src="assets/images/bridge-pour.jpg" alt="Crew, concrete pumps, and cranes on a bridge deck pour" width="1610" height="1710" />
+            <figcaption><span>Job photo · Site concrete</span> Bridge deck pour</figcaption>
+          </figure>
           <figure data-kind="formwork">
             <img src="assets/images/wall.jpg" alt="Reference photograph of a smooth interior wall" width="1400" height="937" />
             <figcaption><span>Reference · Formwork</span> Fair-faced wall</figcaption>
@@ -396,6 +393,7 @@
 
     <footer class="site-footer">
       <div>
+        <img class="footer-logo" src="assets/logo.svg" alt="G Construction Inc. Crete specialist. Special skills and services." width="280" height="184" />
         <strong>GERCAN Enterprises Inc.</strong>
         <p>Architectural concrete formwork and hard landscaping. Victoria, British Columbia.</p>
       </div>
