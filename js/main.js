@@ -13,15 +13,23 @@
     const open = nav.classList.toggle("is-open");
     toggle.setAttribute("aria-expanded", open ? "true" : "false");
   });
+  function closeNav() {
+    nav.classList.remove("is-open");
+    toggle.setAttribute("aria-expanded", "false");
+  }
   nav.querySelectorAll("a").forEach((link) => {
-    link.addEventListener("click", () => {
-      nav.classList.remove("is-open");
-      toggle.setAttribute("aria-expanded", "false");
-    });
+    link.addEventListener("click", closeNav);
+  });
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && nav.classList.contains("is-open")) {
+      closeNav();
+      toggle.focus();
+    }
   });
 
   const filters = document.querySelectorAll("[data-filter]");
-  const figures = document.querySelectorAll("[data-gallery] figure");
+  const gallery = document.querySelector("[data-gallery]");
+  const figures = gallery.querySelectorAll("figure");
   filters.forEach((button) => {
     button.addEventListener("click", () => {
       const kind = button.getAttribute("data-filter");
@@ -30,10 +38,13 @@
         item.classList.toggle("is-active", active);
         item.setAttribute("aria-selected", active ? "true" : "false");
       });
+      let shown = 0;
       figures.forEach((figure) => {
         const show = kind === "all" || figure.getAttribute("data-kind") === kind;
         figure.classList.toggle("is-hidden", !show);
+        if (show) shown += 1;
       });
+      gallery.dataset.count = String(shown);
     });
   });
 
@@ -103,11 +114,17 @@
   });
 
   document.querySelector("[data-copy]").addEventListener("click", async () => {
+    const text = brief.textContent;
     try {
-      await navigator.clipboard.writeText(brief.textContent);
+      await navigator.clipboard.writeText(text);
       copyNote.textContent = "Copied. Paste it into an Instagram message to @gconstructioninc.";
     } catch (error) {
-      copyNote.textContent = "Select the brief and copy it, then paste it into Instagram.";
+      const range = document.createRange();
+      range.selectNodeContents(brief);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      copyNote.textContent = "Clipboard blocked. The brief is selected — copy it, then paste it into Instagram.";
     }
   });
 
