@@ -7,7 +7,7 @@
   const toTop = document.querySelector("[data-to-top]");
   if (year) year.textContent = String(new Date().getFullYear());
 
-  const sectionLinks = [...nav.querySelectorAll('a[href^="#"]:not(.btn)')];
+  const sectionLinks = [...nav.querySelectorAll('a[href^="#"]')];
   const sections = sectionLinks
     .map((link) => document.querySelector(link.getAttribute("href")))
     .filter(Boolean);
@@ -30,8 +30,24 @@
     toTop.classList.toggle("is-visible", showTop);
     toTop.setAttribute("aria-hidden", showTop ? "false" : "true");
     toTop.tabIndex = showTop ? 0 : -1;
-    if (window.scrollY < 40) setCurrent("");
+    updateCurrent();
   };
+
+  function updateCurrent() {
+    if (window.scrollY < 48) {
+      setCurrent("");
+      return;
+    }
+    const marker = window.scrollY + Math.min(window.innerHeight * 0.28, 240);
+    let id = "";
+    sections.forEach((section) => {
+      const top = section.getBoundingClientRect().top + window.scrollY;
+      if (top <= marker) id = section.id;
+    });
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    if (max - window.scrollY < 40) id = sections[sections.length - 1].id;
+    setCurrent(id);
+  }
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
@@ -46,23 +62,11 @@
         revealObserver.unobserve(entry.target);
       });
     },
-    { threshold: 0.14, rootMargin: "0px 0px -6% 0px" }
+    { threshold: 0.01, rootMargin: "0px 0px 12% 0px" }
   );
   if (document.documentElement.classList.contains("has-reveal")) {
     document.querySelectorAll(".reveal").forEach((el) => revealObserver.observe(el));
   }
-
-  const spy = new IntersectionObserver(
-    (entries) => {
-      const visible = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-      if (!visible || window.scrollY < 40) return;
-      setCurrent(visible.target.id);
-    },
-    { rootMargin: "-40% 0px -50% 0px", threshold: [0.1, 0.25, 0.5, 0.75, 1] }
-  );
-  sections.forEach((section) => spy.observe(section));
 
   toggle.addEventListener("click", () => {
     const open = nav.classList.toggle("is-open");

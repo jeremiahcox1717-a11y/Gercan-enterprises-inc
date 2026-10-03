@@ -342,6 +342,7 @@ h1 em { font-style: italic; color: var(--rust); }
   background: #161815;
   padding: 0.32rem 0.48rem;
   opacity: 0;
+  z-index: 1;
   transition: opacity 0.2s ease;
 }
 .gallery figure:hover .zoom::after,
@@ -569,7 +570,7 @@ fieldset { border: 0; margin: 0; padding: 0; }
 .site-footer {
   display: grid;
   gap: 1.15rem 2rem;
-  padding: 2rem 1.25rem 2.5rem;
+  padding: 2rem 1.25rem 5.25rem;
   border-top: 1px solid var(--line);
   background: var(--ink);
   color: var(--foam);
@@ -648,8 +649,8 @@ fieldset { border: 0; margin: 0; padding: 0; }
 
 .has-reveal .reveal {
   opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transform: translateY(12px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
 }
 .has-reveal .reveal.is-in { opacity: 1; transform: none; }
 .spec-strip .reveal:nth-child(2),
@@ -665,7 +666,7 @@ fieldset { border: 0; margin: 0; padding: 0; }
   .site-footer {
     grid-template-columns: minmax(16rem, 1.5fr) auto auto;
     align-items: end;
-    padding: 2.25rem clamp(1.25rem, 4vw, 3.5rem) 2.4rem;
+    padding: 2.25rem clamp(1.25rem, 4vw, 3.5rem) 4.5rem;
   }
   .site-footer .legal { margin: 0; justify-self: end; }
   .footer-links { justify-content: flex-end; }
