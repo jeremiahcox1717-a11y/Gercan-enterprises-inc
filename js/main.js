@@ -3,11 +3,66 @@
   const toggle = document.querySelector("[data-nav-toggle]");
   const nav = document.querySelector("[data-nav]");
   const year = document.querySelector("[data-year]");
+  const progressBar = document.querySelector("[data-progress-bar]");
+  const toTop = document.querySelector("[data-to-top]");
   if (year) year.textContent = String(new Date().getFullYear());
 
-  const onScroll = () => header.classList.toggle("is-stuck", window.scrollY > 8);
+  const sectionLinks = [...nav.querySelectorAll('a[href^="#"]:not(.btn)')];
+  const sections = sectionLinks
+    .map((link) => document.querySelector(link.getAttribute("href")))
+    .filter(Boolean);
+
+  function setCurrent(id) {
+    sectionLinks.forEach((link) => {
+      const on = id && link.getAttribute("href") === `#${id}`;
+      link.classList.toggle("is-current", on);
+      if (on) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
+    });
+  }
+
+  const onScroll = () => {
+    header.classList.toggle("is-stuck", window.scrollY > 8);
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = max > 0 ? Math.min(1, Math.max(0, window.scrollY / max)) : 0;
+    progressBar.style.transform = `scaleX(${progress})`;
+    const showTop = window.scrollY > 700;
+    toTop.classList.toggle("is-visible", showTop);
+    toTop.setAttribute("aria-hidden", showTop ? "false" : "true");
+    toTop.tabIndex = showTop ? 0 : -1;
+    if (window.scrollY < 40) setCurrent("");
+  };
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
+
+  if (sections.length && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    document.documentElement.classList.add("has-reveal");
+  }
+  const revealObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("is-in");
+        revealObserver.unobserve(entry.target);
+      });
+    },
+    { threshold: 0.14, rootMargin: "0px 0px -6% 0px" }
+  );
+  if (document.documentElement.classList.contains("has-reveal")) {
+    document.querySelectorAll(".reveal").forEach((el) => revealObserver.observe(el));
+  }
+
+  const spy = new IntersectionObserver(
+    (entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible || window.scrollY < 40) return;
+      setCurrent(visible.target.id);
+    },
+    { rootMargin: "-40% 0px -50% 0px", threshold: [0.1, 0.25, 0.5, 0.75, 1] }
+  );
+  sections.forEach((section) => spy.observe(section));
 
   toggle.addEventListener("click", () => {
     const open = nav.classList.toggle("is-open");
@@ -45,6 +100,7 @@
         if (show) shown += 1;
       });
       gallery.dataset.count = String(shown);
+      if (lightbox.open) lightbox.close();
     });
   });
 
@@ -125,6 +181,66 @@
       selection.removeAllRanges();
       selection.addRange(range);
       copyNote.textContent = "Clipboard blocked. The brief is selected — copy it, then paste it into Instagram.";
+    }
+  });
+
+  const lightbox = document.querySelector("[data-lightbox]");
+  const lightboxImg = lightbox.querySelector("[data-lightbox-img]");
+  const lightboxCaption = lightbox.querySelector("[data-lightbox-caption]");
+  const lightboxCount = lightbox.querySelector("[data-lightbox-count]");
+  const lightboxPrev = lightbox.querySelector("[data-lightbox-prev]");
+  const lightboxNext = lightbox.querySelector("[data-lightbox-next]");
+  let lightboxItems = [];
+  let lightboxIndex = 0;
+
+  function visibleFigures() {
+    return [...figures].filter((figure) => !figure.classList.contains("is-hidden"));
+  }
+
+  function renderLightbox() {
+    const figure = lightboxItems[lightboxIndex];
+    const image = figure.querySelector("img");
+    const caption = figure.querySelector("figcaption");
+    lightboxImg.src = image.currentSrc || image.src;
+    lightboxImg.alt = image.alt;
+    lightboxCaption.replaceChildren();
+    caption.childNodes.forEach((node) => lightboxCaption.appendChild(node.cloneNode(true)));
+    lightboxCount.textContent = `${lightboxIndex + 1} / ${lightboxItems.length}`;
+    const single = lightboxItems.length < 2;
+    lightboxPrev.hidden = single;
+    lightboxNext.hidden = single;
+  }
+
+  function openLightbox(figure) {
+    lightboxItems = visibleFigures();
+    lightboxIndex = Math.max(0, lightboxItems.indexOf(figure));
+    renderLightbox();
+    if (!lightbox.open) lightbox.showModal();
+  }
+
+  function stepLightbox(delta) {
+    if (lightboxItems.length < 2) return;
+    lightboxIndex = (lightboxIndex + delta + lightboxItems.length) % lightboxItems.length;
+    renderLightbox();
+  }
+
+  gallery.querySelectorAll("[data-zoom]").forEach((button) => {
+    button.addEventListener("click", () => openLightbox(button.closest("figure")));
+  });
+  lightbox.querySelector("[data-lightbox-close]").addEventListener("click", () => lightbox.close());
+  lightboxPrev.addEventListener("click", () => stepLightbox(-1));
+  lightboxNext.addEventListener("click", () => stepLightbox(1));
+  lightbox.addEventListener("click", (event) => {
+    if (event.target === lightbox) lightbox.close();
+  });
+  lightbox.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      stepLightbox(1);
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      stepLightbox(-1);
     }
   });
 
